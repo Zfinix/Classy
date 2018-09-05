@@ -19,6 +19,6 @@ app.use(bodyParser.urlencoded({
 
 app.use('/api', sRouter);
 
-app.listen(PORT, function () {
+app.listen(process.env.PORT || 3000, function(){
   console.log('Magic happening on port ' + PORT);
 });
