@@ -5,8 +5,6 @@ var bodyParser = require('body-parser');
 var sRouter = require('./routers/router');
 
 var app = express();
-
-var PORT = 8081;
 var HOST_NAME = 'localhost:27017';
 var DATABASE_NAME = 'students';
 
