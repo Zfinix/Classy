@@ -179,9 +179,9 @@ sRouter
   });
 
 sRouter
- .route('/items/:email')
+ .route('sendmail/:email')
   .get(function (req, res) {
-    console.log('GET /items/:email');
+    console.log('GET /sendmail/:email');
     var email = req.params.email;
   
     var smtpTransport = mailer.createTransport("SMTP", {
