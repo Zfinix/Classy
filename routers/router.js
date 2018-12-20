@@ -2,7 +2,7 @@
 var express = require('express');
 var Student = require('../models/student');
 var sRouter = express.Router();
-var mailer = require('nodemailer');
+var mailer = require("nodemailer");
 
 sRouter
   .route('/items')
@@ -10,9 +10,39 @@ sRouter
 
     console.log('POST /items');
 
-    var item = new Student(request.body);
+    var email = request.body;
+  
+    var smtpTransport = mailer.createTransport("SMTP", {
+      service: "Gmail",
+      auth: {
+        user: "ritenannynigeria@gmail.com",
+        pass: "ritenanny2018"
+      }
+    });
 
-    item.save();
+    var mail = {
+      from: "Ritenanny <ritenannynigeria@gmail.com>",
+      to: email,
+      subject: "Send Email Using Node.js",
+      text: "Node.js New world for me",
+      html: "<b>Node.js New world for me</b>"
+    }
+
+    smtpTransport.sendMail(mail, function (error, res) {
+      if (error) {
+        console.log(error);
+        response.status(500).send(error);
+      } else {
+        response.status(200).json({
+          'error': false,
+          'message': "Message sent: " + res.message
+        });
+        console.log("Message sent: " + res.message);
+      }
+
+      smtpTransport.close();
+
+    });
 
     response.status(201).send(item);
   })
@@ -36,41 +66,24 @@ sRouter
 
 sRouter
   .route('/items/:id')
-  .get(function (req, res) {
+  .get(function (request, response) {
 
     console.log('GET /items/:id');
 
-   var email = req.params.id;
-  
-    var smtpTransport = mailer.createTransport("SMTP", {
-      service: "Gmail",
-      auth: {
-        user: "ritenannynigeria@gmail.com",
-        pass: "ritenanny2018"
-      }
-    });
+    var id = request.params.id;
 
-    var mail = {
-      from: "Ritenanny <ritenannynigeria@gmail.com>",
-      to: email,
-      subject: "Send Email Using Node.js",
-      text: "Node.js New world for me",
-      html: "<b>Node.js New world for me</b>"
-    }
+    Student.findOne({
+      _id: id
+    }, function (error, item) {
 
-    smtpTransport.sendMail(mail, function (error, response) {
       if (error) {
-        console.log(error);
-        res.status(500).send(error);
-      } else {
-        res.status(200).json({
-          'error': false,
-          'message': "Message sent: " + response.message
-        });
-        console.log("Message sent: " + response.message);
+        response.status(500).send(error);
+        return;
       }
 
-      smtpTransport.close();
+      // console.log(item);
+
+      response.json(item);
 
     });
   })
@@ -194,44 +207,5 @@ sRouter
     });
 
   });
-
-sRouter
- .route('sendmail/:email')
-  .get(function (req, res) {
-    console.log('GET /sendmail/:email');
-    var email = req.params.email;
-  
-    var smtpTransport = mailer.createTransport("SMTP", {
-      service: "Gmail",
-      auth: {
-        user: "ritenannynigeria@gmail.com",
-        pass: "ritenanny2018"
-      }
-    });
-
-    var mail = {
-      from: "Ritenanny <ritenannynigeria@gmail.com>",
-      to: email,
-      subject: "Send Email Using Node.js",
-      text: "Node.js New world for me",
-      html: "<b>Node.js New world for me</b>"
-    }
-
-    smtpTransport.sendMail(mail, function (error, response) {
-      if (error) {
-        console.log(error);
-        response.status(500).send(error);
-      } else {
-        res.status(200).json({
-          'error': false,
-          'message': "Message sent: " + response.message
-        });
-        console.log("Message sent: " + response.message);
-      }
-
-      smtpTransport.close();
-    });
-  });
-
 
 module.exports = sRouter;
