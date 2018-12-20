@@ -61,7 +61,7 @@ sRouter
     smtpTransport.sendMail(mail, function (error, response) {
       if (error) {
         console.log(error);
-        response.status(500).send(error);
+        res.status(500).send(error);
       } else {
         res.status(200).json({
           'error': false,
