@@ -2,6 +2,7 @@
 var express = require('express');
 var Student = require('../models/student');
 var sRouter = express.Router();
+var mailer = require("nodemailer");
 
 sRouter
   .route('/items')
@@ -33,7 +34,7 @@ sRouter
     });
   });
 
-  sRouter
+sRouter
   .route('/items/:id')
   .get(function (request, response) {
 
@@ -41,14 +42,16 @@ sRouter
 
     var id = request.params.id;
 
-    Student.findOne({ _id: id }, function (error, item) {
+    Student.findOne({
+      _id: id
+    }, function (error, item) {
 
       if (error) {
         response.status(500).send(error);
         return;
       }
 
-     // console.log(item);
+      // console.log(item);
 
       response.json(item);
 
@@ -61,8 +64,10 @@ sRouter
 
     var id = request.params.id;
 
-    Student.findOne({ _id: id }, function (error, item) {
-      
+    Student.findOne({
+      _id: id
+    }, function (error, item) {
+
       if (error) {
         response.status(500).send(error);
         return;
@@ -74,8 +79,8 @@ sRouter
         item.course = request.body.course;
         item.submitted = request.body.submitted;
         item.date = request.body.date;
-       
-      
+
+
         item.save();
 
         response.json("Assignment updated Successfull");
@@ -94,8 +99,10 @@ sRouter
 
     var id = request.params.id;
 
-    Student.findOne({ _id: id }, function (error, item) {
-      
+    Student.findOne({
+      _id: id
+    }, function (error, item) {
+
       if (error) {
         response.status(500).send(error);
         return;
@@ -136,13 +143,15 @@ sRouter
   })
 
   .delete(function (request, response) {
-id
+    id
     console.log('DELETE /items/:id');
 
     var id = request.params.id;
 
-    Student.findOne({ _id: id }, function (error, item) {
-      
+    Student.findOne({
+      _id: id
+    }, function (error, item) {
+
       if (error) {
         response.status(500).send(error);
         return;
@@ -166,6 +175,48 @@ id
         });
       }
     });
+
   });
+
+sRouter
+  .get(function (request, response) {
+
+    console.log('GET /sendmail:email');
+    var email = request.params.email;
+    var smtpTransport = mailer.createTransport("SMTP", {
+      service: "Gmail",
+      auth: {
+        user: "ritenannynigeria@gmail.com",
+        pass: "ritenanny2018"
+      }
+    });
+
+    var mail = {
+      from: "Ritenanny <ritenannynigeria@gmail.com>",
+      to: email,
+      subject: "Send Email Using Node.js",
+      text: "Node.js New world for me",
+      html: "<b>Node.js New world for me</b>"
+    }
+
+    smtpTransport.sendMail(mail, function (error, response) {
+      if (error) {
+        console.log(error);
+        response.status(404).json({
+          'error': true,
+          'message': error
+        });
+      } else {
+        response.status(200).json({
+          'error': false,
+          'message': "Message sent: " + response.message
+        });
+        console.log("Message sent: " + response.message);
+      }
+
+      smtpTransport.close();
+    });
+  });
+
 
 module.exports = sRouter;
