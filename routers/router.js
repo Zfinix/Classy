@@ -36,7 +36,7 @@ sRouter
 
 sRouter
   .route('/items/:id')
-  .get(function (request, response) {
+  .get(function (req, res) {
 
     console.log('GET /items/:id');
 
