@@ -179,11 +179,11 @@ sRouter
   });
 
 sRouter
- .route('/sendmail/:email')
+ .route('/items/:email')
   .get(function (req, res) {
-
-    console.log('GET /sendmail/:email');
+    console.log('GET /items/:email');
     var email = req.params.email;
+  
     var smtpTransport = mailer.createTransport("SMTP", {
       service: "Gmail",
       auth: {
@@ -203,10 +203,7 @@ sRouter
     smtpTransport.sendMail(mail, function (error, response) {
       if (error) {
         console.log(error);
-        response.status(404).json({
-          'error': true,
-          'message': error
-        });
+        response.status(500).send(error);
       } else {
         res.status(200).json({
           'error': false,
