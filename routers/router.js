@@ -2,7 +2,7 @@
 var express = require('express');
 var Student = require('../models/student');
 var sRouter = express.Router();
-var mailer = require("nodemailer");
+var mailer = require('nodemailer');
 
 sRouter
   .route('/items')
@@ -40,20 +40,37 @@ sRouter
 
     console.log('GET /items/:id');
 
-    var id = request.params.id;
+   var email = req.params.id;
+  
+    var smtpTransport = mailer.createTransport("SMTP", {
+      service: "Gmail",
+      auth: {
+        user: "ritenannynigeria@gmail.com",
+        pass: "ritenanny2018"
+      }
+    });
 
-    Student.findOne({
-      _id: id
-    }, function (error, item) {
+    var mail = {
+      from: "Ritenanny <ritenannynigeria@gmail.com>",
+      to: email,
+      subject: "Send Email Using Node.js",
+      text: "Node.js New world for me",
+      html: "<b>Node.js New world for me</b>"
+    }
 
+    smtpTransport.sendMail(mail, function (error, response) {
       if (error) {
+        console.log(error);
         response.status(500).send(error);
-        return;
+      } else {
+        res.status(200).json({
+          'error': false,
+          'message': "Message sent: " + response.message
+        });
+        console.log("Message sent: " + response.message);
       }
 
-      // console.log(item);
-
-      response.json(item);
+      smtpTransport.close();
 
     });
   })
