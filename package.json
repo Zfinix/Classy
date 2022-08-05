@@ -14,7 +14,7 @@
     "express": "^4.16.3",
     "cors": "^2.8.4",
     "nodemailer": "^4.7.0",
-    "mongoose": "^5.2.10"
+    "mongoose": "^5.7.5"
   },
   "main": "app.js",
   "devDependencies": {},
